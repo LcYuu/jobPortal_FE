@@ -1,0 +1,11 @@
+.job-type-badge {
+    background-color: rgba(0, 0, 255, 0.1); /* Màu nền xanh nhạt */
+    color: #3b82f6; /* Màu chữ xanh lam */
+    border: 1px solid #3b82f6; /* Đường viền cùng màu với chữ */
+    padding: 2px 8px; /* Khoảng cách bên trong */
+    border-radius: 8px; /* Bo tròn các góc */
+    font-size: 12px; /* Kích thước chữ */
+    font-weight: 600; /* Độ đậm của chữ */
+    text-transform: uppercase; /* Chuyển chữ thành in hoa */
+  }
+  
