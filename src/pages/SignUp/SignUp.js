@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '../../ui/button';
 import { Input } from '../../ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
@@ -16,7 +16,24 @@ export default function SignUpForm() {
   const [confirmationCode, setConfirmationCode] = useState("");
   const [activeTab, setActiveTab] = useState("job-seeker");
   const [confirmationStatus, setConfirmationStatus] = useState(null); // null, 'success', 'failure'
+  const [timeLeft, setTimeLeft] = useState(120); // 2 minutes in seconds
+  const [isTimeUp, setIsTimeUp] = useState(false); // Check if time is up
+  const [resendEmail, setResendEmail] = useState(""); // Email input for resending code
+  const [emailSubmitted, setEmailSubmitted] = useState(false); // Track if email was submitted
+  const [isPaused, setIsPaused] = useState(false); // Track if timer is paused
   const navigate = useNavigate();
+
+  // Countdown effect
+  useEffect(() => {
+    if (isModalOpen && timeLeft > 0 && !isPaused) {
+      const timer = setTimeout(() => {
+        setTimeLeft(timeLeft - 1);
+      }, 1000);
+      return () => clearTimeout(timer); // Clean up timer
+    } else if (timeLeft === 0) {
+      setIsTimeUp(true); // Set time up flag when countdown reaches 0
+    }
+  }, [timeLeft, isModalOpen, isPaused]);
 
   const jobSeekerFields = [
     { name: "fullName", placeholder: "Họ và tên", type: "text" },
@@ -35,30 +52,47 @@ export default function SignUpForm() {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    // Only show modal if signing up via email
     setIsModalOpen(true);
+    setTimeLeft(120); // Reset timer on opening modal
+    setIsTimeUp(false); // Reset time up flag
   };
 
   const handleGoogleSignUp = () => {
-    // Handle Google Sign-Up logic here
     console.log('Sign Up with Google');
   };
 
   const handleConfirmation = (e) => {
     e.preventDefault();
-    if (confirmationCode === "123456") {
-      setConfirmationStatus('success');
-    } else {
-      setConfirmationStatus('failure');
-    }
+    setIsPaused(true); // Pause timer when submitting
+    setTimeout(() => {
+      if (confirmationCode === "123456") {
+        setConfirmationStatus('success');
+        setIsPaused(true); // Stop the timer as the confirmation is successful
+      } else {
+        setConfirmationStatus('failure');
+        setIsPaused(false); // Resume the timer as the confirmation failed
+      }
+    }, 1000); // Simulate API response time
+  };
+
+  const handleResendCode = (e) => {
+    e.preventDefault();
+    // Here you would trigger the backend logic to resend the confirmation code to the new email
+    console.log("Resend confirmation code to:", resendEmail);
+    setEmailSubmitted(true);
+    // Reset the countdown for the new code
+    setTimeLeft(120);
+    setIsTimeUp(false);
+    setEmailSubmitted(false);
+    setIsPaused(false); // Start the timer again
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     if (confirmationStatus === 'success') {
-      navigate('/auth/sign-in'); // Redirect to sign-in page on success
+      navigate('/auth/sign-in');
     } else {
-      setConfirmationStatus(null); // Reset modal state
+      setConfirmationStatus(null);
     }
   };
 
@@ -95,7 +129,7 @@ export default function SignUpForm() {
             <Button onClick={() => setConfirmationStatus(null)} className="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white">Thử lại</Button>
           </motion.div>
         )}
-        {confirmationStatus === null && (
+        {confirmationStatus === null && !isTimeUp && (
           <motion.form
             key="form"
             initial={{ opacity: 0, y: 20 }}
@@ -114,7 +148,46 @@ export default function SignUpForm() {
             <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
               Xác nhận
             </Button>
+            <p className="text-sm text-gray-500 text-center">
+              Còn lại {Math.floor(timeLeft / 60)}:{timeLeft % 60 < 10 ? `0${timeLeft % 60}` : timeLeft % 60} để nhập mã
+            </p>
           </motion.form>
+        )}
+        {isTimeUp && (
+          <motion.div
+            key="timeUp"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="text-center"
+          >
+            <h3 className="text-2xl font-semibold text-red-600">Hết thời gian!</h3>
+            <p className="mt-2 text-sm text-gray-600">Vui lòng nhập lại email để lấy mã xác nhận mới.</p>
+            {!emailSubmitted ? (
+              <motion.form
+                key="resendForm"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                onSubmit={handleResendCode}
+                className="space-y-4"
+              >
+                <Input
+                  type="email"
+                  placeholder="Nhập email của bạn"
+                  value={resendEmail}
+                  onChange={(e) => setResendEmail(e.target.value)}
+                />
+                <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+                  Gửi lại mã
+                </Button>
+              </motion.form>
+            ) : (
+              <p className="text-sm text-gray-600">Mã đã được gửi lại!</p>
+            )}
+          </motion.div>
         )}
       </AnimatePresence>
     );
@@ -122,6 +195,7 @@ export default function SignUpForm() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-100 flex items-center justify-center p-4">
+      {/* Card content for sign up */}
       <Card className="w-full max-w-md bg-white shadow-lg rounded-lg">
         <CardHeader className="border-b border-indigo-300">
           <div className="flex justify-between items-center mb-4">
@@ -143,12 +217,7 @@ export default function SignUpForm() {
         </CardHeader>
         <CardContent className="p-6">
           <form className="space-y-4">
-            <Button 
-              type="button" 
-              variant="outline" 
-              className="w-full flex items-center justify-center gap-2 border border-gray-300 hover:bg-gray-50"
-              onClick={handleGoogleSignUp} // Handle Google sign-up without triggering modal
-            >
+            <Button variant="outline" onClick={handleGoogleSignUp} className="w-full flex items-center justify-center gap-2 border border-gray-300 hover:bg-gray-50">
               <img src={googleIcon} className="w-5 h-5" alt="Google Icon" />
               <span>Sign Up with Google</span>
             </Button>
@@ -191,15 +260,16 @@ export default function SignUpForm() {
         </CardContent>
       </Card>
 
+      {/* Modal for confirmation code */}
       <Dialog isOpen={isModalOpen} onClose={handleCloseModal}>
         <DialogContent className="sm:max-w-[425px] bg-white shadow-lg rounded-lg p-6">
           <DialogHeader>
-            {confirmationStatus === null && (
+            {confirmationStatus === null && !isTimeUp && (
               <DialogTitle className="text-lg text-center mb-2 font-semibold text-gray-900">
                 Xác nhận đăng ký
               </DialogTitle>
             )}
-            {!confirmationStatus && (
+            {!confirmationStatus && !isTimeUp && (
               <DialogDescription className="text-sm text-center text-gray-600">
                 Vui lòng nhập mã xác nhận đã được gửi đến email của bạn.
               </DialogDescription>

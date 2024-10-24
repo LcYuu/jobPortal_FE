@@ -12,7 +12,7 @@ const categoryStyles = {
       backgroundColor: "rgba(128, 0, 128, 0.1)", // màu tím nhạt
       color: "purple",
     },
-    // Bạn có thể thêm các category và màu khác tại đây
+    
     "Marketing": {
       backgroundColor: "rgba(255, 165, 0, 0.1)", // màu cam nhạt
       color: "orange",
@@ -26,13 +26,15 @@ const categoryStyles = {
   function JobCardContent({ company, location, categories }) {
     return (
       <>
-        <p className="text-muted-foreground text-sm mb-2"><span className="inline-block max-w-[150px] truncate">{company}</span> 
-        • {location}</p>
+        <p className="text-muted-foreground text-sm mb-2">
+          <span className="inline-block max-w-[150px] truncate">{company}</span> 
+          • <span className="location-ellipsis">{location}</span>
+        </p>
         <div className="flex space-x-2">
           {categories.map((category, index) => (
             <Badge
               key={index}
-              style={categoryStyles[category] || { backgroundColor: "rgba(0, 0, 0, 0.1)", color: "black" }} // màu mặc định nếu không có trong danh sách
+              style={categoryStyles[category] || { backgroundColor: "rgba(0, 0, 0, 0.1)", color: "black" }} // default color if not in list
               variant="secondary"
             >
               {category}
@@ -42,6 +44,7 @@ const categoryStyles = {
       </>
     );
   }
+  
 export default function JobCard({ jobTitle, company, location, categories, jobType,companyLogo }) {
     const navigate = useNavigate();
 

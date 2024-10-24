@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import './App.css';
 import Header from './components/common/Header/header';
 import Home from './pages/Home/Home';
-import SignUpForm from './pages/SignUp/SignUp';
+import SignUpForm from './pages/SignUp/signup'
 import './global.css';
 import SignInForm from "./pages/SignIn/SignIn";
 const App = () => {
@@ -13,13 +13,10 @@ const App = () => {
 
   return (
     <>
-      {showHeader && <Header />} {/* Chỉ hiển thị Header khi không phải trang đăng ký */}
+      {showHeader && <Header />} 
       <Routes>
-        {/* Trang đăng ký và đăng nhập */}
         <Route path="/auth/sign-up" element={<SignUpForm />} />
         <Route path="/auth/sign-in" element={<SignInForm />} />
-
-        {/* Trang chính (Home) */}
         <Route path="/" element={<Home />} />
       </Routes>
     </>

@@ -8,4 +8,12 @@
     font-weight: 600; /* Độ đậm của chữ */
     text-transform: uppercase; /* Chuyển chữ thành in hoa */
   }
+  .location-ellipsis {
+    display: inline-block;
+    max-width: 100px; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
   

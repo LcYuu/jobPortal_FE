@@ -17,6 +17,8 @@ const categories = [
 
 const CategoryList = () => {
   return (
+    <>
+    <h2 className="text-2xl font-bold">Danh mục </h2>
     <div className="category-list">
       {categories.map((category, index) => (
         <CategoryCard
@@ -27,6 +29,8 @@ const CategoryList = () => {
         />
       ))}
     </div>
+    </>
+    
   );
 };
 

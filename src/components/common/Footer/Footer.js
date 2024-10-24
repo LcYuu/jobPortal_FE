@@ -1,7 +1,10 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebookF, faTwitter, faInstagram, faLinkedinIn } from '@fortawesome/free-brands-svg-icons'; // Import các icon từ FontAwesome
+import { faFacebookF, faTwitter, faInstagram, faLinkedinIn } from '@fortawesome/free-brands-svg-icons'; 
 import logo from '../../../assets/images/common/logo.jpg';
+import { Input } from '../../../ui/input';
+import { Button } from '../../../ui/button';
+
 export default function Footer() {
   const socialIcons = [
     { icon: faFacebookF, link: 'https://facebook.com' },
@@ -16,14 +19,27 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-8 md:mb-0">
             <div className="flex items-center space-x-2 mb-4">
-              <img src={logo}  alt="logo" className="w-8 h-8 bg-purple-600 rounded-full"></img>
+              <img src={logo} alt="logo" className="w-8 h-8 bg-purple-600 rounded-full"></img>
               <span className="text-xl font-bold text-white">JobRadar</span>
             </div>
-            <p className="text-gray-400 text-sm">
-              Nền tảng tuyệt vời dành cho người tìm việc. Tìm
+            <p className="text-slate-200 text-sm text">
+              Nền tảng tuyệt vời dành cho người tìm việc.
               <br />
-              công việc mơ ước của bạn dễ dàng hơn.
+              Tìm công việc mơ ước của bạn dễ dàng hơn.
             </p>
+          </div>
+
+          {/* Job Alert Section */}
+          <div className="mb-8 md:mb-0 flex flex-col items-center justify-center">
+            <h4 className="font-semibold text-white mb-2">Đăng ký nhận thông báo việc làm</h4>
+            <div className="flex space-x-2">
+              <Input
+                type="email"
+                placeholder="Nhập email của bạn"
+                className="w-64 text-gray-900"
+              />
+              <Button className="bg-purple-600 text-white">Đăng ký</Button>
+            </div>
           </div>
 
           <div className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-12">
